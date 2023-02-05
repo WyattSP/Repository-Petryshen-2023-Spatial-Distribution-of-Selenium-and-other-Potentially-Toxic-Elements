@@ -166,117 +166,16 @@ write.csv(moss_summary_final_no11, file = "Path to Save to/Summary_Statistics_No
 #####
 #####
 #####
-#Tests for species differences in elemental compositions
-#Line 193 and lower for all elements in a single for loop
-#Line 171 to 192 to run individual elements and plot as a boxplot.
-#Remove samples with NA's
-non_averaged_data <- Org_data[-c(1,6,18),]
-#Anova for Species versus Se
-res.aov <- aov(Zn ~ non_averaged_data$`Species Tent`, data = non_averaged_data)
-summary(res.aov)
-plot(res.aov, 1) #Some outliers detected. Using Levene's test to test homogeneity of variances.
-car::leveneTest(as.double(non_averaged_data$Se) ~ as.factor(non_averaged_data$`Species Tent`), data = non_averaged_data) #Results is non-significant
-plot(res.aov, 2) #Normal Q-Q plot shows data is approximately normal.
-
-#Boxplot for Se versus
-element_choice = "Ni"
-ggplot(non_averaged_data,aes(as.double(Ni),`Species Tent`)) +
+#Boxplot for Se versus moss species
+#Code to create Figure S3
+element_choice = "Se"
+ggplot(non_averaged_data,aes(as.double(Se),`Species Tent`)) +
   geom_boxplot() + coord_flip() +
   geom_jitter(aes(colour = non_averaged_data$Cent_Elkview)) +
   geom_text(aes(label = as.character(`Site`)), na.rm = TRUE, hjust = -0.05, cex=4) +
   guides(fill="none") +
   labs(colour="Distance (m)") +
-  ylab("Site Locations") +
+  ylab("") +
   xlab(sprintf("%s Concentration (mg/kg)", element_choice)) +
-  ggtitle(sprintf("%s: Boxplot of Species versus Concentration", element_choice)) +
+  ggtitle(sprintf("%s: Boxplot of concentration versus species", element_choice)) +
   scale_colour_gradient(low = "blue", high = "red")
-
-#Calculate and store summary data
-elements <- names(Org_data)[21:73] #Should be 53 elements
-row_names_anova <- c('DF','Mean Sq','Sum Sq','F Value','Pr(>F)', 'Levene F Value', 'Levene Pr(>F)')
-
-anova_species <- data.frame(matrix(ncol=length(elements), nrow = length(row_names_anova)))
-colnames(anova_species) <- elements
-rownames(anova_species) <- row_names_anova
-
-n = 0
-for (i in elements){
-  n = n + 1
-  a = non_averaged_data[i]
-  temp = aov(as.numeric(a[[1]]) ~ non_averaged_data$`Species Tent`, data = non_averaged_data)
-  levenetemp = car::leveneTest(as.numeric(a[[1]]) ~ as.factor(non_averaged_data$`Species Tent`), data = non_averaged_data)
-  b = summary(temp)
-
-  val = b[[1]][["Pr(>F)"]][1]
-  val2 = levenetemp$`Pr(>F)`[1]
-
-  anova_species[1,n] <- b[[1]][["Df"]][1]
-  anova_species[2,n] <- b[[1]][["Mean Sq"]][1]
-  anova_species[3,n] <- b[[1]][["Sum Sq"]][1]
-  anova_species[4,n] <- b[[1]][["F value"]][1]
-  anova_species[5,n] <- b[[1]][["Pr(>F)"]][1]
-  anova_species[6,n] <- levenetemp$`F value`[1]
-  anova_species[7,n] <- levenetemp$`Pr(>F)`[1]
-
-  if(val < 0.05){
-    print(sprintf("Anove %s", i))
-  }
-  if(val2 < 0.05){
-    print(sprintf("Levene %s", i))
-  }
-}
-
-#Pairwise t-test for Z
-#P<0.05 for Hylocomium splendins to Pleurozium schreberi and Ptilium crista-castrensis.
-pairwise.t.test(as.double(non_averaged_data$Zn),non_averaged_data$`Species Tent`)
-
-####
-####
-####
-#Linear models comparing moss elemental concentrations to sample weight collected
-
-#For individual element
-lm(non_averaged_data$Ni ~ non_averaged_data$`Wet Mass Pre Analysis (grams)`) %>% summary()
-
-#Plots of concentrations to sample weight
-element_choice = "Be"
-non_averaged_data %>% as.data.frame %>%
-  ggplot(aes(y = as.double(Be),x = `Wet Mass Pre Analysis (grams)`)) +
-  geom_point() +
-  geom_text(aes(label = as.character(`Site`)), na.rm = TRUE, hjust = -0.05, cex=4) +
-  xlab("Sample Weight Collected") +
-  ylab(sprintf("%s Concentration (mg/kg)", element_choice)) +
-  ggtitle(sprintf("%s: Boxplot of Sample Weight Collected versus Concentration", element_choice)) +
-  scale_colour_gradient(low = "blue", high = "red")
-
-#For loop for all elements
-row_names_weight <- c('Adjusted R-sq','t value','Pr(>|t|)')
-
-lm_weight <- data.frame(matrix(ncol=length(elements), nrow = length(row_names_weight)))
-colnames(lm_weight) <- elements
-rownames(lm_weight) <- row_names_weight
-
-n = 0
-for (i in elements){
-  n = n + 1
-  a = non_averaged_data[i]
-  temp = lm(as.numeric(a[[1]]) ~ non_averaged_data$`Wet Mass Pre Analysis (grams)`) %>% summary()
-
-  val = temp$coefficients[8]
-
-  lm_weight[1,n] <- temp$adj.r.squared
-  lm_weight[2,n] <- temp$coefficients[6]
-  lm_weight[3,n] <- temp$coefficients[8]
-
-  if(val < 0.05){
-    print(sprintf("Lm %s", i))
-  }
-}
-
-#Elements with significant t-values; Adj R-sq, t value, Pr reported in brackets
-#Be(0.14 2.36 0.03), Bi(0.15 2.51 0.02), Co(0.10 2.08 0.05),
-#Cr(0.17 2.64 0.01), Ge(0.15 2.51 0.02), Hf(0.20 2.84 0.01),
-#K(0.31 -3.73  0.00), Mg(0.23 -3.11  0.00), Nb(0.15 2.44 0.02),
-#Ni(0.12 2.23 0.03), P(0.20 -2.84  0.01), S(0.18 -2.70  0.01),
-#Sb(0.26 3.35 0.00), Te(0.12 2.22 0.03), V(0.14 2.40 0.02),
-#Zr(0.16 2.57 0.02)
