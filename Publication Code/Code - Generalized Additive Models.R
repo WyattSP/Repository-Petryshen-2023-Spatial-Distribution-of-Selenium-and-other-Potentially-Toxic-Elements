@@ -15,6 +15,7 @@ data_gam <- CF_data[-c(5),]
 model_E = gam(log(data_gam$Se) ~  s(as.double(data_gam$Cent_Elkview)) +
                  s(as.double(data_gam$Elkview_Azimuth), bs = 'cc'), method = "REML",family = tw(link = "log"))
 plot_model_E = plot.gam(model_E,pages=1,residuals = TRUE)
+par(mfrow=c(2,2), oma=c(0,0,2,0)) #Plot all diagnositic figures in a single window
 gam.check(model_E)
 summary(model_E)
 
@@ -22,6 +23,7 @@ summary(model_E)
 model_L = gam(log(data_gam$Se) ~  s(as.double(data_gam$Cent_Line_Creek)) +
                  s(as.double(data_gam$LineCreek_Azimuth), bs = 'cc'), method = "REML",family = tw(link = "log"))
 plot_model_L = plot.gam(model_L,pages=1,residuals = TRUE)
+par(mfrow=c(2,2), oma=c(0,0,2,0)) #Plot all diagnositic figures in a single window
 gam.check(model_L)
 summary(model_L)
 
