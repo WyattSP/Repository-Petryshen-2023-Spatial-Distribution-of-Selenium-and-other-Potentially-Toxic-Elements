@@ -1,10 +1,8 @@
 # Repository-Petryshen-2023-Spatial-Distribution-of-Selenium-and-other-Potentially-Toxic-Elements
  Data repository and supplementary information for the article Petryshen W. 2023. Spatial Distribution of Selenium and other Potentially Toxic Elements associated with Mountaintop Coal Mining in the Elk Valley, British Columbia, Canada.
 
- W. Petryshen
-
- Wildsight, Kimberley, British Columbia, Canada
- 
+ W. Petryshen;
+ Wildsight, Kimberley, British Columbia, Canada;
  ORCID: 0000-0003-3894-4333
 
  This repository contains the scripts, data, and shapefiles from the study. You should be able to run all the analysis as well as recreate all the plots from the below scripts. Many of the R scripts are dependent on previously run and transformed data. Either run all the code in the order presented below, within a single R environment, or important required data as indicated in the scripts.
