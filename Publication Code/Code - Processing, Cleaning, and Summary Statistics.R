@@ -168,14 +168,16 @@ write.csv(moss_summary_final_no11, file = "Path to Save to/Summary_Statistics_No
 #####
 #Boxplot for Se versus moss species
 #Code to create Figure S3
+non_averaged_data$`Species Tent`[non_averaged_data$`Species Tent`== "Hylocomium splendins"] <- "Hylocomium splendens" #Correction of spelling error
 element_choice = "Se"
-ggplot(non_averaged_data,aes(as.double(Se),`Species Tent`)) +
+Species_plot = ggplot(non_averaged_data,aes(as.double(Se),`Species Tent`)) +
   geom_boxplot() + coord_flip() +
   geom_jitter(aes(colour = non_averaged_data$Cent_Elkview)) +
   geom_text(aes(label = as.character(`Site`)), na.rm = TRUE, hjust = -0.05, cex=4) +
   guides(fill="none") +
   labs(colour="Distance (m)") +
   ylab("") +
-  xlab(sprintf("%s Concentration (mg/kg)", element_choice)) +
+  xlab(sprintf("%s Concentration (mg/kg dw)", element_choice)) +
   ggtitle(sprintf("%s: Boxplot of concentration versus species", element_choice)) +
   scale_colour_gradient(low = "blue", high = "red")
+
