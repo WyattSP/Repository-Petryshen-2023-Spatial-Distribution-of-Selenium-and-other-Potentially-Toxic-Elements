@@ -12,24 +12,23 @@ data_gam <- CF_data[-c(5),]
 
 #Generalized Additive Models for Distance from Centroids and Azimuth to Sample Sites from Mine Centroid
 #Elkview Mine: log(Se) CFs dependent on Azimuth and Distance
-model_E = gam(log(data_gam$Se) ~  s(as.double(data_gam$Cent_Elkview)) +
-                 s(as.double(data_gam$Elkview_Azimuth), bs = 'cc'), method = "REML",family = tw(link = "log"))
-plot_model_E = plot.gam(model_E,pages=1,residuals = TRUE)
-par(mfrow=c(2,2), oma=c(0,0,2,0)) #Plot all diagnositic figures in a single window
+model_E = gam(data_gam$Se ~  s(as.double(data_gam$Cent_Elkview)) +
+                 s(as.double(data_gam$Elkview_Azimuth), bs = 'cc'), method = "REML",family = tw(link = "identity"))
+plot_model_E = plot.gam(model_E,pages=1,residuals = FALSE)
+par(mfrow=c(2,2), oma=c(0,0,2,0)) #Plot all diagnostic figures in a single window
 gam.check(model_E)
 summary(model_E)
 
 #Line Creek Mine: log(Se) CFs dependent on Azimuth and Distance
-model_L = gam(log(data_gam$Se) ~  s(as.double(data_gam$Cent_Line_Creek)) +
-                 s(as.double(data_gam$LineCreek_Azimuth), bs = 'cc'), method = "REML",family = tw(link = "log"))
-plot_model_L = plot.gam(model_L,pages=1,residuals = TRUE)
-par(mfrow=c(2,2), oma=c(0,0,2,0)) #Plot all diagnositic figures in a single window
+model_L = gam(data_gam$Se ~  s(as.double(data_gam$Cent_Line_Creek)) +
+                 s(as.double(data_gam$LineCreek_Azimuth)), method = "REML",family = tw(link = "identity"))
+plot_model_L = plot.gam(model_L,pages=1,residuals = FALSE)
+par(mfrow=c(2,2), oma=c(0,0,2,0)) #Plot all diagnostic figures in a single window
 gam.check(model_L)
 summary(model_L)
 
 #AIC
 AIC(model_E, model_L) #Model_L has a lower AIC so thus better explains our data
-
 
 #Summary plots for individual models
 #Change the element of interest in the below equation from the data.gam data frame
@@ -78,145 +77,153 @@ mtext("Se", line=-2, side=3, outer=TRUE, cex=2) #Need to change title for elemen
 #Elview GAM Distance Smoothing Parameter
 plot_model_E_Dist <- plot_model_E[[1]]
 sm_df <- as.data.frame(plot_model_E_Dist[c("x", "se", "fit")])
-data_df <- as.data.frame(plot_model_E_Dist[c("raw", "p.resid")])
+data_df <- as.data.frame(plot_model_E_Dist[c("raw")])
 
 E_plot_d = ggplot(sm_df, aes(x = x, y = fit)) +
   geom_rug(data = data_df, mapping = aes(x = raw, y = NULL),
            sides = "b") +
-  geom_point(data = data_df, mapping = aes(x = raw, y = p.resid)) +
   geom_ribbon(data=sm_df,aes(ymin = fit - se, ymax = fit + se, y = NULL),
               alpha = 0.1, linetype = 2, fill = 'white', color = 'black') +
   geom_line() +
   labs(x = plot_model_E$xlab, y = plot_model_E$ylab) +
-  annotate("text", x = data_df$raw[1], y = data_df$p.resid[1], label = "1",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[2], y = data_df$p.resid[2], label = "2",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[3], y = data_df$p.resid[3], label = "3",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[4], y = data_df$p.resid[4], label = "4",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[5], y = data_df$p.resid[5], label = "5",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[6], y = data_df$p.resid[6], label = "6",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[7], y = data_df$p.resid[7], label = "7",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[8], y = data_df$p.resid[8], label = "8",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[9], y = data_df$p.resid[9], label = "9",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[10], y = data_df$p.resid[10], label = "10",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[11], y = data_df$p.resid[11], label = "11",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[12], y = data_df$p.resid[12], label = "12",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[13], y = data_df$p.resid[13], label = "13",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[14], y = data_df$p.resid[14], label = "14",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[15], y = data_df$p.resid[15], label = "15",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[16], y = data_df$p.resid[16], label = "16",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[17], y = data_df$p.resid[17], label = "17",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[18], y = data_df$p.resid[18], label = "18",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[19], y = data_df$p.resid[19], label = "19",vjust=-0.5,hjust=0.2) +
-  ylab("s(Distance, 1.50)") + xlab("Distance") + theme(aspect.ratio=3/4,
+  ylab("s(Distance, 1.24)") + xlab("Distance") + theme(aspect.ratio=3/4,
                                                        panel.background = element_rect(fill = "white", colour = "grey50"))
 
 #Elview GAM Azimuth Smoothing Parameter
 plot_model_E_Azi <- plot_model_E[[2]]
 sm_df <- as.data.frame(plot_model_E_Azi[c("x", "se", "fit")])
-data_df <- as.data.frame(plot_model_E_Azi[c("raw", "p.resid")])
+data_df <- as.data.frame(plot_model_E_Azi[c("raw")])
 
 E_plot_a = ggplot(sm_df, aes(x = x, y = fit)) +
   geom_rug(data = data_df, mapping = aes(x = raw, y = NULL),
            sides = "b") +
-  geom_point(data = data_df, mapping = aes(x = raw, y = p.resid)) +
   geom_ribbon(data=sm_df,aes(ymin = fit - se, ymax = fit + se, y = NULL),
               alpha = 0.1, linetype = 2, fill = 'white', color = 'black') +
   geom_line() +
   labs(x = plot_model_E$xlab, y = plot_model_E$ylab) +
-  annotate("text", x = data_df$raw[1], y = data_df$p.resid[1], label = "1",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[2], y = data_df$p.resid[2], label = "2",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[3], y = data_df$p.resid[3], label = "3",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[4], y = data_df$p.resid[4], label = "4",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[5], y = data_df$p.resid[5], label = "5",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[6], y = data_df$p.resid[6], label = "6",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[7], y = data_df$p.resid[7], label = "7",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[8], y = data_df$p.resid[8], label = "8",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[9], y = data_df$p.resid[9], label = "9",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[10], y = data_df$p.resid[10], label = "10",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[11], y = data_df$p.resid[11], label = "11",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[12], y = data_df$p.resid[12], label = "12",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[13], y = data_df$p.resid[13], label = "13",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[14], y = data_df$p.resid[14], label = "14",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[15], y = data_df$p.resid[15], label = "15",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[16], y = data_df$p.resid[16], label = "16",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[17], y = data_df$p.resid[17], label = "17",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[18], y = data_df$p.resid[18], label = "18",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[19], y = data_df$p.resid[19], label = "19",vjust=-0.5,hjust=0.2) +
-  ylab("s(Distance, 3.23)") + xlab("Azimuth") + theme(aspect.ratio=3/4,
-                                                       panel.background = element_rect(fill = "white", colour = "grey50"))
+  ylab("s(Distance, 3.22)") + xlab("Azimuth") + theme(aspect.ratio=3/4,
+                                                      panel.background = element_rect(fill = "white", colour = "grey50"))
 
 #Line Creek GAM Distance Smoothing Parameter
 plot_model_L_Dist <- plot_model_L[[1]]
 sm_df <- as.data.frame(plot_model_L_Dist[c("x", "se", "fit")])
-data_df <- as.data.frame(plot_model_L_Dist[c("raw", "p.resid")])
+data_df <- as.data.frame(plot_model_L_Dist[c("raw")])
 
 L_plot_d =  ggplot(sm_df, aes(x = x, y = fit)) +
   geom_rug(data = data_df, mapping = aes(x = raw, y = NULL),
            sides = "b") +
-  geom_point(data = data_df, mapping = aes(x = raw, y = p.resid)) +
   geom_ribbon(data=sm_df,aes(ymin = fit - se, ymax = fit + se, y = NULL),
               alpha = 0.1, linetype = 2, fill = 'white', color = 'black') +
   geom_line() +
   labs(x = plot_model_L$xlab, y = plot_model_L$ylab) +
-  annotate("text", x = data_df$raw[1], y = data_df$p.resid[1], label = "1",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[2], y = data_df$p.resid[2], label = "2",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[3], y = data_df$p.resid[3], label = "3",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[4], y = data_df$p.resid[4], label = "4",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[5], y = data_df$p.resid[5], label = "5",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[6], y = data_df$p.resid[6], label = "6",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[7], y = data_df$p.resid[7], label = "7",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[8], y = data_df$p.resid[8], label = "8",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[9], y = data_df$p.resid[9], label = "9",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[10], y = data_df$p.resid[10], label = "10",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[11], y = data_df$p.resid[11], label = "11",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[12], y = data_df$p.resid[12], label = "12",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[13], y = data_df$p.resid[13], label = "13",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[14], y = data_df$p.resid[14], label = "14",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[15], y = data_df$p.resid[15], label = "15",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[16], y = data_df$p.resid[16], label = "16",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[17], y = data_df$p.resid[17], label = "17",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[18], y = data_df$p.resid[18], label = "18",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[19], y = data_df$p.resid[19], label = "19",vjust=-0.5,hjust=0.2) +
-  ylab("s(Distance, 3.00)") + xlab("Distance") + theme(aspect.ratio=3/4,
+  ylab("s(Distance, 3.86)") + xlab("Distance") + theme(aspect.ratio=3/4,
                                                        panel.background = element_rect(fill = "white", colour = "grey50"))
 
 #Line Creek GAM Azimuth Smoothing Parameter
 plot_model_L_Azi <- plot_model_L[[2]]
 sm_df <- as.data.frame(plot_model_L_Azi[c("x", "se", "fit")])
-data_df <- as.data.frame(plot_model_L_Azi[c("raw", "p.resid")])
+data_df <- as.data.frame(plot_model_L_Azi[c("raw")])
 
 L_plot_a =  ggplot(sm_df, aes(x = x, y = fit)) +
   geom_rug(data = data_df, mapping = aes(x = raw, y = NULL),
            sides = "b") +
-  geom_point(data = data_df, mapping = aes(x = raw, y = p.resid)) +
   geom_ribbon(data=sm_df,aes(ymin = fit - se, ymax = fit + se, y = NULL),
               alpha = 0.1, linetype = 2, fill = 'white', color = 'black') +
   geom_line() +
   labs(x = plot_model_L$xlab, y = plot_model_L$ylab) +
-  annotate("text", x = data_df$raw[1], y = data_df$p.resid[1], label = "1",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[2], y = data_df$p.resid[2], label = "2",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[3], y = data_df$p.resid[3], label = "3",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[4], y = data_df$p.resid[4], label = "4",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[5], y = data_df$p.resid[5], label = "5",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[6], y = data_df$p.resid[6], label = "6",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[7], y = data_df$p.resid[7], label = "7",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[8], y = data_df$p.resid[8], label = "8",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[9], y = data_df$p.resid[9], label = "9",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[10], y = data_df$p.resid[10], label = "10",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[11], y = data_df$p.resid[11], label = "11",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[12], y = data_df$p.resid[12], label = "12",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[13], y = data_df$p.resid[13], label = "13",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[14], y = data_df$p.resid[14], label = "14",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[15], y = data_df$p.resid[15], label = "15",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[16], y = data_df$p.resid[16], label = "16",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[17], y = data_df$p.resid[17], label = "17",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[18], y = data_df$p.resid[18], label = "18",vjust=-0.5,hjust=0.2) +
-  annotate("text", x = data_df$raw[19], y = data_df$p.resid[19], label = "19",vjust=-0.5,hjust=0.2) +
-  ylab("s(Distance, 3.35)") + xlab("Azimiuth") + theme(aspect.ratio=3/4,
+  ylab("s(Distance, 4.02)") + xlab("Azimiuth") + theme(aspect.ratio=3/4,
                                                        panel.background = element_rect(fill = "white", colour = "grey50"))
 
 #Facet plot of all smoothing parameters from the GAMs
+library('ggpubr')
 ggarrange(E_plot_d, E_plot_a,
           L_plot_d, L_plot_a,
           labels = c("a)", "b)", "c)", "d)"),
           ncol = 2, nrow = 2)
+
+
+###Linear Regression Models contained within the Supporting Information
+#Linear Model 1: Alexander Creek Drainage Se Contamination in relation to Line Creek Distance
+#Input Data
+in_linear <- data_gam[c(10,11,12,13,14,16),c("Site","Cent_Line_Creek","Cent_Elkview","Se")]
+#Model
+lm(in_linear$Se ~ in_linear$Cent_Line_Creek) %>% summary()
+
+#Plot of Linear Model 1
+LM_1_Plot = in_linear %>% as.data.frame %>%
+  ggplot(aes(Se,as.double(Cent_Line_Creek))) +
+  geom_point() + geom_smooth(method = 'lm') +
+  scale_x_reverse() +
+  scale_x_reverse() + labs(x = "Se CFs", y = "Distance from Line Creek Mine (m)") +
+  annotate("text", x = 5.904255, y = 16488.27, label = "10",hjust=0,vjust=-0.2) + annotate("text", x = 4.095745, y = 18934.04, label = "11",hjust=0,vjust=-0.2) +
+  annotate("text", x = 4.734043, y = 21103.77, label = "12",hjust=0,vjust=-0.2) + annotate("text", x = 2.170213, y = 26502.98, label = "13",hjust=0,vjust=-0.2) +
+  annotate("text", x = 1.329787, y = 34050.03, label = "14",hjust=0,vjust=-0.2) + annotate("text", x = 1.531915, y = 33971.95, label = "16",hjust=0,vjust=-0.2)
+
+#Linear Model 2: Alexander Creek Drainage Se Contamination in relation to Elkview Distance
+lm(in_linear$Se ~ in_linear$Cent_Elkview) %>% summary()
+
+#Plot of Linear Model 2
+LM_2_Plot = in_linear %>% as.data.frame %>%
+  ggplot(aes(Se,as.double(Cent_Elkview))) +
+  geom_point() + geom_smooth(method = 'lm') +
+  scale_x_reverse() +
+  scale_x_reverse() + labs(x = "Se CFs", y = "Distance from Elkview Mine (m)") +
+  annotate("text", x = 5.904255, y = 10760.553, label = "10",hjust=0,vjust=-0.2) + annotate("text", x = 4.095745, y = 9158.146, label = "11",hjust=0,vjust=-0.2) +
+  annotate("text", x = 4.734043, y = 7566.238, label = "12",hjust=0,vjust=-0.2) + annotate("text", x = 2.170213, y = 8747.102, label = "13",hjust=0,vjust=-0.2) +
+  annotate("text", x = 1.329787, y = 12711.132, label = "14",hjust=0,vjust=-0.2) + annotate("text", x = 1.531915, y = 13696.933, label = "16",hjust=0,vjust=-0.2)
+
+#Models 3: All samples in relation to Line Creek Mine
+lm(data_gam$Se ~ data_gam$Cent_Line_Creek) %>% summary()
+
+#Line Creek
+LM_3_Plot = data_gam %>% as.data.frame %>%
+  ggplot(aes(Se,as.double(Cent_Line_Creek))) +
+  geom_point() + geom_smooth(method = 'lm') +
+  scale_x_reverse() + labs(x = "Se CFs", y = "Distance from Line Creek Mine (m)") +
+  annotate("text", x = 5.131206, y = 12119.75, label = "1",hjust=0,vjust=-0.3) +
+  annotate("text", x = 3.744681, y = 14378.34, label = "2",hjust=0,vjust=-0.3) +
+  annotate("text", x = 3.457447, y = 12340.02, label = "3",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.553191, y = 12804.56, label = "4",hjust=0,vjust=-0.3) +
+  annotate("text", x = 3.553191, y = 20017.43, label = "5",hjust=0,vjust=-0.3) +
+  annotate("text", x = 3.595745, y = 22036.12, label = "6",hjust=0,vjust=-0.3) +
+  annotate("text", x = 2.170213, y = 24818.09, label = "7",hjust=0,vjust=-0.3) +
+  annotate("text", x = 2.265957, y = 27838.83, label = "8",hjust=0,vjust=-0.3) +
+  annotate("text", x = 2.000000, y = 31315.80, label = "9",hjust=0,vjust=-0.3) +
+  annotate("text", x = 5.904255, y = 16488.27, label = "10",hjust=0,vjust=-0.3) +
+  annotate("text", x = 4.095745, y = 18934.04, label = "11",hjust=0,vjust=-0.3) +
+  annotate("text", x = 4.734043, y = 21103.77, label = "12",hjust=0,vjust=-0.3) +
+  annotate("text", x = 2.170213, y = 26502.98, label = "13",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.329787, y = 34050.03, label = "14",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.851064, y = 37934.82, label = "15",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.531915, y = 33971.95, label = "16",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.563830, y = 32976.11, label = "17",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.361702, y = 29611.37, label = "18",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.000000, y = 51775.42, label = "19",hjust=0,vjust=-0.3)
+
+#Model 4: All samples in relation to Elkview Mine
+lm(data_gam$Se ~ data_gam$Cent_Elkview) %>% summary()
+
+#Elkview
+LM_4_Plot = data_gam %>% as.data.frame %>%
+  ggplot(aes(Se,as.double(Cent_Elkview))) +
+  geom_point() + geom_smooth(method = 'lm') +
+  scale_x_reverse() + labs(x = "Se CFs", y = "Distance from Elkview Mine (m)") +
+  annotate("text", x = 5.131206, y = 11343.101, label = "1",hjust=0,vjust=-0.3) +
+  annotate("text", x = 3.744681, y = 9042.240, label = "2",hjust=0,vjust=-0.3) +
+  annotate("text", x = 3.457447, y = 11899.030, label = "3",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.553191, y = 14059.746, label = "4",hjust=0,vjust=-0.3) +
+  annotate("text", x = 3.553191, y = 6304.527, label = "5",hjust=0,vjust=-0.3) +
+  annotate("text", x = 3.595745, y = 4996.340, label = "6",hjust=0,vjust=-0.3) +
+  annotate("text", x = 2.170213, y = 6640.605, label = "7",hjust=0,vjust=-0.3) +
+  annotate("text", x = 2.265957, y = 6946.658, label = "8",hjust=0,vjust=-0.3) +
+  annotate("text", x = 2.000000, y = 8369.644, label = "9",hjust=0,vjust=-0.3) +
+  annotate("text", x = 5.904255, y = 10760.553, label = "10",hjust=0,vjust=-0.3) +
+  annotate("text", x = 4.095745, y = 9158.146, label = "11",hjust=0,vjust=-0.3) +
+  annotate("text", x = 4.734043, y = 7566.238, label = "12",hjust=0,vjust=-0.3) +
+  annotate("text", x = 2.170213, y = 8747.102, label = "13",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.329787, y = 12711.132, label = "14",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.851064, y = 15335.409, label = "15",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.531915, y = 13696.933, label = "16",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.563830, y = 17041.054, label = "17",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.361702, y = 23538.293, label = "18",hjust=0,vjust=-0.3) +
+  annotate("text", x = 1.000000, y = 29797.597, label = "19",hjust=0,vjust=-0.3)
