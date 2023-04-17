@@ -27,12 +27,10 @@
 
  To reproduce the Tables and Figures:
  * Table 1 data can be retrieved from the 'Summary Statistics No Site 11' sheet in Petryshen_2023_Moss_Data.xlsx
- * Table 2 data can be retrieved by running line 19, 26, and 29 in 'Code - Generalized Additive Models.R'
- * Table 3 data can be retrieved from the 'Pearson Correlation Coefficient' sheet in Petryshen_2023_Moss_Data.xlsx
- * Figure 1 was completed in QGIS; Wind rose was created using Wind Rose.py
- * Figure 2 run 'Code - Map Plot.R' following full analysis of data
- * Figure 3 run lines 75-220 following creation of the GAMs in 'Code - Generalized Additive Models.R'
- * Figure 4 run lines 37-103 following calculations in 'Code - Element Correlations.R'
+ * Table 2 data can be retrieved from the 'Pearson Correlation Coefficient' sheet in Petryshen_2023_Moss_Data.xlsx
+ * Figure 1 was completed in QGIS; Wind rose was created using Wind Rose.py; Run 'Code - Map Plot.R' following full analysis of data to get Se CF distribution
+ * Figure 2 run lines 75-220 following creation of the GAMs in 'Code - Generalized Additive Models.R'
+ * Figure 3 run lines 37-103 following calculations in 'Code - Element Correlations.R'
 
  Data outputs from each R script is included in the CSV Files of R Exports folder:
  * Cleaned Moss Data.csv
